@@ -344,9 +344,15 @@ def configure_node(o):
   o['variables']['v8_no_strict_aliasing'] = 1 # work around compiler bugs
   o['variables']['node_prefix'] = os.path.expanduser(options.prefix or '')
   o['variables']['node_install_npm'] = b(not options.without_npm)
-  o['default_configuration'] = 'Debug' if options.debug else 'Release'
+  if options.debug:
+    o['default_configuration'] = 'Debug'
+  else: 
+    o['default_configuration'] = 'Release'
 
-  host_arch = host_arch_win() if os.name == 'nt' else host_arch_cc()
+  if os.name == 'nt':
+    host_arch = host_arch_win() 
+  else: 
+    host_arch = host_arch_cc()
   target_arch = options.dest_cpu or host_arch
   o['variables']['host_arch'] = host_arch
   o['variables']['target_arch'] = target_arch
@@ -355,7 +361,10 @@ def configure_node(o):
     configure_arm(o)
 
   cc_version, is_clang = compiler_version()
-  o['variables']['clang'] = 1 if is_clang else 0
+  if is_clang:
+    o['variables']['clang'] = 1
+  else:
+    o['variables']['clang'] = 0
 
   if not is_clang and cc_version != 0:
     o['variables']['gcc_version'] = 10 * cc_version[0] + cc_version[1]
